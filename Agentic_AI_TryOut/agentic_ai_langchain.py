@@ -1,11 +1,13 @@
 import openai
 import os
 from dotenv import load_dotenv
-from langchain_community.chat_models import ChatOpenAI  # Importação atualizada
+from langchain_openai import ChatOpenAI
 from langchain.tools import Tool
 from langchain.agents import initialize_agent, AgentType
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationChain
 
-# Definindo a chave da API, agora de forma correta com o openai
+# Carregar variáveis de ambiente
 load_dotenv()
 api_key = os.getenv('OPEN_API_KEY')
 
@@ -39,16 +41,38 @@ tool_stock = Tool(
     description="Obtém o preço atual de uma ação pelo símbolo da empresa. Argumento: símbolo (string)."
 )
 
+# Definindo a LLM
+llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=api_key)
+
+# Definir o componente de memória
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
 # Inicializando o agente com as ferramentas
-llm = ChatOpenAI(model="gpt-4-1106-preview", openai_api_key=api_key)
 agent = initialize_agent(
     tools=[tool_weather, tool_stock],
     llm=llm,
     agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    memory=memory,
     verbose=True
 )
 
-# Exemplo de uso - esperando a entrada do usuário
-user_input = input("\nDigite sua pergunta: ")  # Espera pela entrada do usuário
-response = agent.run(user_input)
-print(response)
+# Loop para manter a conversa ativa e armazenar histórico
+conversation_history = []
+print("\nDigite 'sair' para encerrar a conversa.")
+while True:
+    user_input = input("\nVocê: ")
+    if user_input.lower() == "sair":
+        print("\nEncerrando a conversa. Até mais!")
+        break
+    
+    # Adiciona a entrada do usuário ao histórico
+    conversation_history.append({"role": "user", "content": user_input})
+    
+    # Envia a conversa completa para o agente
+    #response = agent.run("\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history]))
+    response = agent.run(user_input)
+
+    # Adiciona a resposta do assistant ao histórico
+    conversation_history.append({"role": "assistant", "content": response})
+    
+    print("assistant:", response)

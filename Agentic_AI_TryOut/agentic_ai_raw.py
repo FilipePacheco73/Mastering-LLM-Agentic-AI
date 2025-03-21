@@ -53,9 +53,9 @@ def chat_with_tools(prompt: str):
         }
     ]
 
-    # Interagir com a API do OpenAI, utilizando o modelo gpt-4
+    # Interagir com a API do OpenAI, utilizando o modelo gpt-4o-mini
     response = openai.chat.completions.create(
-        model="gpt-4",  # Usando o modelo mais atualizado
+        model="gpt-4o-mini",  # Usando o modelo mais atualizado
         messages=[{"role": "user", "content": prompt}],
         functions=tools,
         function_call="auto"  # Auto-determina a necessidade de chamada de ferramenta
