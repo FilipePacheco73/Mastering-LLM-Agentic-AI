@@ -2,3 +2,4 @@
 *venv_llm
 *.env
 *personal*
+*__pycache__*
