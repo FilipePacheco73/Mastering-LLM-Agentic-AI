@@ -3,3 +3,4 @@
 *.env
 *personal*
 *__pycache__*
+*.pkl
