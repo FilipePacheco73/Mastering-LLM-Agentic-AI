@@ -8,7 +8,7 @@ image = Image.debian_slim().pip_install("torch", "transformers", "bitsandbytes",
 secrets = [modal.Secret.from_name("hf-secret")]
 GPU = "T4"
 MODEL_NAME = "meta-llama/Meta-Llama-3.1-8B" # "google/gemma-2-2b"
-MODEL_NAME = "google/gemma-2-2b"
+MODEL_NAME = "/root/.llama/checkpoints/Llama3.1-8B"
 
 
 @app.function(image=image, secrets=secrets, gpu=GPU, timeout=1800)
